@@ -11,7 +11,7 @@ class HelloWorldConsumer {
 
     private val logger = LoggerFactory.getLogger(HelloWorldConsumer::class.java)
 
-    @KafkaListener(topics = ["hello-world-topic"], groupId = "hello-world-group")
+   //@KafkaListener(topics = ["hello-world-topic"], groupId = "hello-world-group")
     fun receiveMessage(@Payload message: HelloWorldMessage) {
         logger.info("Получено сообщение: $message")
     }

@@ -2,6 +2,7 @@ package com.gmail.wizaripost.learning
 
 import com.gmail.wizaripost.learning.feignClientTest.DzenService
 import com.gmail.wizaripost.learning.feignClientTest.JackpotsNormalGroupApiClient
+import com.gmail.wizaripost.learning.list.linkedlist.WLinkedList
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -12,7 +13,7 @@ import org.springframework.kafka.annotation.EnableKafka
 
 @SpringBootApplication
 @EnableFeignClients
-@EnableKafka
+//@EnableKafka
 class LearningApplication(
 	private val dzenService: DzenService,
 	private val jackpotsNormalGroupApiClient: JackpotsNormalGroupApiClient,
@@ -36,4 +37,20 @@ class LearningApplication(
 
 fun main(args: Array<String>) {
 	runApplication<LearningApplication>(*args)
+
+	var wList = WLinkedList()
+	wList.add(10000)
+	wList.add(111111)
+	wList.add(22222)
+	wList.add(33)
+	wList.add(44)
+	wList.add(55)
+
+	println(wList.get(0))
+	println(wList.get(1))
+	println(wList.get(2))
+	println(wList.get(3))
+	println(wList.get(4))
+	println(wList.get(5))
+	println(wList.get(-5))
 }
