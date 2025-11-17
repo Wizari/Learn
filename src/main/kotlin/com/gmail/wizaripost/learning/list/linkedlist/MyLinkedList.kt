@@ -1,19 +1,19 @@
 package com.gmail.wizaripost.learning.list.linkedlist
 
-class MyLinkedList<T> : MutableList<T> {
-    override fun add(element: T): Boolean {
+class MyLinkedList : MutableList<Int> {
+    override fun add(element: Int): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun add(index: Int, element: T) {
+    override fun add(index: Int, element: Int) {
         TODO("Not yet implemented")
     }
 
-    override fun addAll(index: Int, elements: Collection<T>): Boolean {
+    override fun addAll(index: Int, elements: Collection<Int>): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun addAll(elements: Collection<T>): Boolean {
+    override fun addAll(elements: Collection<Int>): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -21,54 +21,54 @@ class MyLinkedList<T> : MutableList<T> {
         TODO("Not yet implemented")
     }
 
-    override fun listIterator(): MutableListIterator<T> {
+    override fun listIterator(): MutableListIterator<Int> {
         TODO("Not yet implemented")
     }
 
-    override fun listIterator(index: Int): MutableListIterator<T> {
+    override fun listIterator(index: Int): MutableListIterator<Int> {
         TODO("Not yet implemented")
     }
 
-    override fun remove(element: T): Boolean {
+    override fun remove(element: Int): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun removeAll(elements: Collection<T>): Boolean {
+    override fun removeAll(elements: Collection<Int>): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun removeAt(index: Int): T {
+    override fun removeAt(index: Int): Int {
         TODO("Not yet implemented")
     }
 
-    override fun retainAll(elements: Collection<T>): Boolean {
+    override fun retainAll(elements: Collection<Int>): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun set(index: Int, element: T): T {
+    override fun set(index: Int, element: Int): Int {
         TODO("Not yet implemented")
     }
 
-    override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> {
+    override fun subList(fromIndex: Int, toIndex: Int): MutableList<Int> {
         TODO("Not yet implemented")
     }
 
     override val size: Int
         get() = TODO("Not yet implemented")
 
-    override fun contains(element: T): Boolean {
+    override fun contains(element: Int): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun containsAll(elements: Collection<T>): Boolean {
+    override fun containsAll(elements: Collection<Int>): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun get(index: Int): T {
+    override fun get(index: Int): Int {
         TODO("Not yet implemented")
     }
 
-    override fun indexOf(element: T): Int {
+    override fun indexOf(element: Int): Int {
         TODO("Not yet implemented")
     }
 
@@ -76,11 +76,12 @@ class MyLinkedList<T> : MutableList<T> {
         TODO("Not yet implemented")
     }
 
-    override fun lastIndexOf(element: T): Int {
+    override fun lastIndexOf(element: Int): Int {
         TODO("Not yet implemented")
     }
 
-    override fun iterator(): MutableIterator<T> {
+    override fun iterator(): MutableIterator<Int> {
         TODO("Not yet implemented")
     }
+
 }
