@@ -1,4 +1,5 @@
 package com.gmail.wizaripost.learning.balls_test
+
 import com.gmail.wizaripost.learning.balls.calculateReelAnimationFlagsStatic
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
@@ -125,7 +126,7 @@ class ReelAnimationServiceTest {
                         arrayOf(0, 1, 0)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, false),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 // Тест 10:
                 TestCase(
@@ -137,7 +138,7 @@ class ReelAnimationServiceTest {
                         arrayOf(0, 1, 0, 0)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, false),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 // Тест 11:
                 TestCase(
@@ -149,7 +150,7 @@ class ReelAnimationServiceTest {
                         arrayOf(0, 1, 0)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, false, false),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 // Тест 12:
                 TestCase(
@@ -161,7 +162,7 @@ class ReelAnimationServiceTest {
                         arrayOf(1, 1, 1, 1, 1)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, true),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 // Тест 13:
                 TestCase(
@@ -173,7 +174,7 @@ class ReelAnimationServiceTest {
                         arrayOf(1, 1, 1, 1, 1, 1)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, true),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 // Тест 14:
                 TestCase(
@@ -185,7 +186,7 @@ class ReelAnimationServiceTest {
                         arrayOf(0, 1, 1, 1, 1, 1)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, false),
-                    description = "6 balls in single reel"
+                    description = ""
                 ),
                 //15
                 TestCase(
@@ -193,11 +194,11 @@ class ReelAnimationServiceTest {
                         arrayOf(0, 0, 0), // 0 шаров
                         arrayOf(0, 0, 0), // 0 шаров
                         arrayOf(0, 0, 0), // 0 шаров
-                        arrayOf(1, 1, 1), // 6 шаров
-                        arrayOf(0, 1, 0)  // 0 шаров
+                        arrayOf(0, 1, 1), // 6 шаров
+                        arrayOf(1, 1, 1)  // 0 шаров
                     ),
-                    expected = booleanArrayOf(true, true, true, true, false),
-                    description = "6 balls in single reel"
+                    expected = booleanArrayOf(true, true, true, false, false),
+                    description = ""
                 ),
                 //16
                 TestCase(
@@ -209,7 +210,31 @@ class ReelAnimationServiceTest {
                         arrayOf(1, 1, 0)  // 0 шаров
                     ),
                     expected = booleanArrayOf(true, true, true, true, false),
-                    description = "6 balls in single reel"
+                    description = ""
+                ),
+                //17
+                TestCase(
+                    matrix = arrayOf(
+                        arrayOf(0, 0, 0, 0), // 0 шаров
+                        arrayOf(0, 0, 0, 0), // 0 шаров
+                        arrayOf(0, 0, 0, 0), // 0 шаров
+                        arrayOf(0, 1, 0, 1), // 6 шаров
+                        arrayOf(0, 1, 0, 1)  // 0 шаров
+                    ),
+                    expected = booleanArrayOf(true, true, true, true, false),
+                    description = ""
+                ),
+                //16
+                TestCase(
+                    matrix = arrayOf(
+                        arrayOf(0, 0, 0), // 0 шаров
+                        arrayOf(0, 0, 0), // 0 шаров
+                        arrayOf(0, 0, 0), // 0 шаров
+                        arrayOf(0, 1, 1), // 6 шаров
+                        arrayOf(1, 0, 0)  // 0 шаров
+                    ),
+                    expected = booleanArrayOf(true, true, true, false, false),
+                    description = ""
                 ),
             )
         }

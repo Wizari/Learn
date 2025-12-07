@@ -2,17 +2,22 @@ package com.gmail.wizaripost.learning.balls
 
 fun calculateReelAnimationFlagsStatic(matrix: Array<Array<Int>>): BooleanArray {
     val result = booleanArrayOf(true, true, true, false, false)
+//    var totalBalls = matrix.sumOf { reel -> reel.count { it == 1 } }
 
     var totalBalls = 0
-    for (reel in 0 until 5) {
+    for (reel in matrix.indices) {
         for (row in matrix[reel].indices) {
             if (matrix[reel][row] == 1) {
                 totalBalls++
             }
         }
     }
+
     if (totalBalls >= 6) {
         return booleanArrayOf(true, true, true, true, true)
+    }
+    if (totalBalls == 0) {
+        return result
     }
 
 
