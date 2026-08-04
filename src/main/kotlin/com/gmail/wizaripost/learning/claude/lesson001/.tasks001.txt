@@ -1,0 +1,217 @@
+Отлично, это хорошая база для старта. Раз ты уже пишешь простые программы и целишься в Kotlin+Spring, вот с чем предлагаю начать, чтобы не было "дыр":
+
+Java всё-таки не буду навязывать — раз конечная цель Kotlin, разумнее сразу качать фундамент на нём. Синтаксис Java легко доучить потом за пару дней, если понадобится (на работе часто встречается legacy-код).
+
+Как построю обучение при 4-7 ч/неделю:
+
+Этап 1 (2-3 недели) — ООП и типы
+
+Классы, объекты, конструкторы (primary/secondary)
+Инкапсуляция, наследование, интерфейсы, абстрактные классы
+data class, sealed class, enum class — фишки Kotlin, которых нет в чистом ООП
+Null safety (?, ?:, !!) — это то, что реально отличает Kotlin и часто плохо понимается новичками
+Практика: 5-7 маленьких задач на каждую тему (например, смоделировать библиотеку, зоопарк — классика, но работает)
+
+Этап 2 (2 недели) — коллекции и функциональщина
+
+List, Set, Map, их изменяемые/неизменяемые версии
+Лямбды, map, filter, reduce, extension functions
+Обработка исключений, try/catch, Result
+
+Этап 3 (2-3 недели) — алгоритмы и структуры данных, база
+
+Big O на пальцах (зачем это вообще нужно)
+Сортировки (не для написания вручную на работе, а для понимания сложности)
+Рекурсия, стек вызовов
+Простые структуры: стек, очередь, связный список — не ради теории, а чтобы понимать, что происходит "под капотом" у List/ArrayDeque
+
+Этап 4 (2 недели) — Kotlin-специфика для продакшена
+
+Корутины (базово: suspend, launch, async)
+Generics
+Работа с файлами, сериализация (Jackson/kotlinx.serialization)
+
+Этап 5 (после этого) — Spring осознанно
+
+IoC/DI не как магия, а с пониманием, что происходит
+Spring Boot, REST, слои (controller/service/repository)
+Тут ты уже что-то знаешь — будет "ага, вот почему это так работает"
+
+На каждом этапе — не просто теория, а маленькие проекты (консольные сначала, потом переходим к чему-то с БД).
+
+Хочешь, начнём прямо сейчас с первой темы — ООП в Kotlin? Могу сразу дать объяснение + несколько практических задач с растущей сложностью.
+
+го
+
+Orchestrated Kotlin OOP lesson with practical exercises
+Orchestrated Kotlin OOP lesson with practical exercises
+
+Погнали. Начнём с классов и объектов — фундамент фундамента.
+
+Класс и объект
+
+Класс — это чертёж, объект — это то, что по этому чертежу построено.
+
+kotlin
+class Car(val brand: String, var speed: Int) {
+    fun accelerate() {
+        speed += 10
+        println("$brand разгоняется до $speed км/ч")
+    }
+}
+
+fun main() {
+    val myCar = Car("Toyota", 0)
+    myCar.accelerate()  // Toyota разгоняется до 10 км/ч
+}
+
+Важные моменты, которые в Kotlin работают не как в Java:
+
+1. Primary constructor прямо в заголовке класса
+
+kotlin
+class Car(val brand: String, var speed: Int)
+
+Это сразу и объявление полей, и конструктор. val — неизменяемое поле (только чтение снаружи), var — изменяемое. Никакого boilerplate с полями + конструктором + геттерами, как в Java.
+
+2. init-блок — если нужна логика при создании
+
+kotlin
+class Car(val brand: String, var speed: Int) {
+    init {
+        require(speed >= 0) { "Скорость не может быть отрицательной" }
+    }
+}
+
+3. Secondary constructor — редко нужен, но бывает
+
+kotlin
+class Car(val brand: String, var speed: Int) {
+    constructor(brand: String) : this(brand, 0)
+}
+Инкапсуляция
+
+По умолчанию всё public. Чтобы скрыть детали:
+
+kotlin
+class BankAccount(private var balance: Int) {
+    fun deposit(amount: Int) {
+        if (amount > 0) balance += amount
+    }
+
+    fun getBalance(): Int = balance
+}
+
+Снаружи нельзя написать account.balance = 1000000 напрямую — только через методы, которые контролируют логику.
+
+Практика
+
+Три задачи, от простой к чуть менее простой. Пиши код, я проверю и дам следующую подсказку/усложнение.
+
+Задача 1. Создай класс Student с полями name (val) и grades (изменяемый список Int, изначально пустой). Добавь метод addGrade(grade: Int), который добавляет оценку в список, и метод averageGrade(): Double, который считает среднее (если оценок нет — верни 0.0).
+
+Задача 2. Создай класс Rectangle(width, height) с приватными полями. Добавь методы area() и perimeter(). Добавь метод isSquare(): Boolean.
+
+Задача 3. Создай класс Wallet с приватным балансом. Добавь deposit(amount) и withdraw(amount). withdraw не должен позволять уйти в минус — вместо этого пусть выбрасывает исключение IllegalArgumentException с понятным сообщением, если денег не хватает.
+
+Пиши решения любым удобным способом — прямо сюда текстом. Не торопись, если что-то непонятно из объяснения выше — спрашивай, лучше сейчас разобраться, чем потом переучиваться.
+
+class Student(
+    private val name: String,
+    private var grades: MutableList<Int>
+){
+    fun addGrade(grade: Int){
+        grades.add(grade)
+    }
+    fun averageGrade(): Double {
+        if (grades.isEmpty()) {
+            return 0.0
+        }
+        var sumGrade: Double = 0.0
+        for (grade in grades) {
+            sumGrade += grade
+        }
+        return sumGrade / grades.size
+    }
+}
+class Rectangle(
+    private val width: Int,
+    private val height: Int,
+) {
+    fun area(): Int = width * height
+    fun perimeter(): Int = 2 * (width + height)
+    fun isSquare(): Boolean {
+        if (width == height) {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+class Wallet(
+    private var balance: Int,
+) {
+    fun deposit(amount: Int) {
+        balance += amount
+    }
+    fun withdraw(amount: Int): Int {
+        if (balance < amount) throw IllegalArgumentException("Недостаточно средств на счету!")
+        balance -= amount
+        return amount
+    }
+}
+
+Show more
+Scrutinized code patterns and identified opportunities for Kotlin idioms
+Scrutinized code patterns and identified opportunities for Kotlin idioms
+
+Хорошо, разберём по каждому классу.
+
+Student
+
+Работает правильно. Но два момента:
+
+1. Задача просила "изначально пустой список" — а у тебя вызывающий код обязан передать список сам:
+
+kotlin
+val s = Student("Аня", mutableListOf())  // неудобно
+
+Лучше дать значение по умолчанию прямо в конструкторе:
+
+kotlin
+class Student(
+    private val name: String,
+    private val grades: MutableList<Int> = mutableListOf()
+) {
+    ...
+}
+
+Обрати внимание: список теперь val, а не var — сам список не переприсваивается, меняется только его содержимое (grades.add(...)). Это важная идиома Kotlin: val для коллекции не значит "неизменяемая коллекция", значит "неизменяемая ссылка на коллекцию".
+
+2. Цикл на сумму — рабочий, но есть готовая функция:
+
+kotlin
+fun averageGrade(): Double {
+    if (grades.isEmpty()) return 0.0
+    return grades.average()
+}
+
+average() — стандартная функция на коллекциях чисел. В Kotlin вообще стоит держать в голове: прежде чем писать цикл руками, почти всегда есть готовая функция (sum(), average(), max(), count { } и т.д.). Разберём это подробнее в теме про коллекции.
+
+Rectangle
+
+Всё верно, но isSquare — хороший пример лишнего кода:
+
+kotlin
+fun isSquare(): Boolean = width == height
+
+width == height уже возвращает Boolean. Конструкция if (x) return true else return false — красный флаг, который стоит научиться сразу видеть и убирать. Выражение само по себе уже булево значение.
+
+Wallet
+
+Логика верная, исключение кидается правильно. Пара мыслей, не ошибок, а на подумать:
+
+deposit не проверяет amount > 0 — можно положить отрицательную сумму и обналичить баланс. Стоит защититься так же, как в withdraw.
+Возврат amount из withdraw — работает, но подумай: вызывающий код и так знает, сколько он снял (он же сам передал amount). Что было бы полезнее вернуть — новый баланс? Или вообще ничего (Unit)? Тут нет единственно верного ответа, это вопрос дизайна API — просто держи в голове, что возвращаемое значение должно нести новую информацию.
+
+Поправь эти два места и покажи финальный вариант — потом идём дальше, к наследованию и интерфейсам, это следующий кусок ООП.
