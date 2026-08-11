@@ -1,0 +1,120 @@
+Всё три задачи решены корректно, логика верная. Разберу пару моментов, скорее стилистических, чем ошибок.
+
+Задача 1 — Employee/Manager/Developer
+
+Без замечаний, чистый пример правильного abstract class: общая логика (printPaycheck) в родителе, специфика — в наследниках. Именно так это и задумано.
+
+Задача 2 — Drawable
+
+Логика верная. Единственное — про нейминг CircleImpl, SquareImpl. Суффикс Impl обычно добавляют, когда есть конфликт имён — например, если бы у тебя уже был класс/интерфейс Circle, а это его конкретная реализация. Здесь конфликта нет, Drawable — это интерфейс с другим именем, поэтому Impl избыточен. Достаточно Circle, Square. Мелочь, но в реальном коде такие суффиксы "по привычке" засоряют читаемость — оставляй Impl только когда он реально что-то разрешает.
+
+Задача 3 — Discountable
+
+Работает верно. Одна тонкость:
+
+kotlin
+interface Discountable {
+    abstract fun originalPrice(): Double
+    ...
+}
+
+Ключевое слово abstract тут лишнее — в интерфейсе метод без тела автоматически абстрактный, писать abstract явно не нужно (в отличие от abstract class, где это обязательно, чтобы отличить абстрактный метод от метода с реализацией). Просто:
+
+kotlin
+interface Discountable {
+    fun originalPrice(): Double
+    fun discountedPrice(): Double = originalPrice() * 0.9
+}
+
+Хороший повод запомнить разницу: в interface умолчание — "абстрактный, если нет тела", в abstract class умолчание — "обычный метод, abstract пиши явно".
+
+Кстати, заметил, что ты аккуратно раскладываешь задачи по пакетам (lesson002.q1, q2, q3) — это хорошая привычка, так и в реальных проектах структурируют код по фичам/модулям.
+
+Идём дальше — следующий блок: data class, sealed class, enum class и null safety. Это то, что реально отличает Kotlin от классической ООП-модели и то, с чем ты будешь работать каждый день.
+
+data class
+
+Когда класс — это просто контейнер данных (DTO, модель), незачем руками писать equals, hashCode, toString, copy:
+
+kotlin
+data class User(val name: String, val age: Int)
+
+fun main() {
+    val u1 = User("Аня", 25)
+    val u2 = User("Аня", 25)
+    println(u1 == u2)          // true — сравнение по значению, не по ссылке
+    println(u1)                 // User(name=Аня, age=25) — toString готов
+    val u3 = u1.copy(age = 26)  // копия с изменённым полем
+}
+
+== в Kotlin — это всегда сравнение по значению (equals), а не по ссылке (для ссылки есть ===). У обычного класса equals по умолчанию сравнивает ссылки, у data class — генерируется honest сравнение по полям.
+
+enum class
+kotlin
+enum class Status {
+    ACTIVE, INACTIVE, BANNED
+}
+
+Можно и с параметрами:
+
+kotlin
+enum class Status(val description: String) {
+    ACTIVE("Активен"),
+    INACTIVE("Неактивен"),
+    BANNED("Заблокирован")
+}
+sealed class
+
+Это как enum, но каждый вариант может нести разные данные и быть отдельным классом. Используется, когда набор вариантов заранее известен и закрыт (нельзя унаследоваться откуда-то ещё, кроме как в том же файле/модуле):
+
+kotlin
+sealed class ApiResult
+data class Success(val data: String) : ApiResult()
+data class Error(val message: String) : ApiResult()
+object Loading : ApiResult()
+
+Главная фишка — when по sealed class компилятор проверяет на полноту:
+
+kotlin
+fun handle(result: ApiResult) = when (result) {
+    is Success -> println("Данные: ${result.data}")
+    is Error -> println("Ошибка: ${result.message}")
+    Loading -> println("Загрузка...")
+    // если забудешь ветку — не скомпилируется, а не упадёт в рантайме
+}
+
+Это именно то, чем в Spring-приложениях часто моделируют результат операции (успех/ошибка/etc) вместо кидания исключений на каждый чих.
+
+Null safety
+
+Ключевая особенность Kotlin. Тип String не может быть null. Если может — пишешь String?:
+
+kotlin
+var name: String = "Аня"
+name = null  // ошибка компиляции
+
+var nickname: String? = null  // ок
+
+Работа с nullable-типами:
+
+kotlin
+val nickname: String? = null
+
+// safe call — если null, вся цепочка вернёт null
+println(nickname?.length)
+
+// elvis operator — значение по умолчанию, если null
+val len = nickname?.length ?: 0
+
+// !!  — "я уверен, что не null" (кинет NPE, если ошибся; использовать редко, осознанно)
+val forcedLen = nickname!!.length
+
+Правило: !! — это красный флаг в код-ревью. Если видишь его у себя часто — значит, дизайн можно улучшить (например, сделать поле не-nullable или обработать случай через ?:).
+
+Практика
+
+Задача 1. Создай data class Point(x: Int, y: Int). Напиши функцию distance(p1: Point, p2: Point): Double, считающую расстояние между точками. Проверь в main, что copy() и == работают как ожидается.
+
+Задача 2. Создай sealed class PaymentResult с тремя вариантами: Success(val transactionId: String), Failure(val reason: String), Pending (без данных). Напиши функцию describe(result: PaymentResult): String, которая через when возвращает читаемое описание для каждого случая.
+
+Задача 3 (null safety). Есть data class Address(val city: String?, val zipCode: String?) и data class Person(val name: String, val address: Address?). Напиши функцию getCityOrDefault(person: Person): String, которая возвращает город человека, а если адреса нет или города нет — возвращает "Неизвестно". Сделай это через safe call + elvis, без единого !!.
