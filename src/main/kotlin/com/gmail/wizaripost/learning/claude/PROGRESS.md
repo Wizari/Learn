@@ -8,7 +8,7 @@
 
 - [Lesson 001 — Классы, объекты, инкапсуляция ✅](#lesson-001--классы-объекты-инкапсуляция-)
 - [Lesson 002 — Наследование, интерфейсы, abstract class ✅](#lesson-002--наследование-интерфейсы-abstract-class-)
-- [Lesson 003 — data class, sealed class, enum class, null safety 🔶](#lesson-003--data-class-sealed-class-enum-class-null-safety-)
+- [Lesson 003 — data class, sealed class, enum class, null safety ✅](#lesson-003--data-class-sealed-class-enum-class-null-safety-)
 
 ---
 
@@ -318,7 +318,7 @@ class ProductImpl(
 
 ---
 
-## Lesson 003 — data class, sealed class, enum class, null safety 🔶
+## Lesson 003 — data class, sealed class, enum class, null safety ✅
 
 ### Теория
 
@@ -417,9 +417,9 @@ val forcedLen = nickname!!.length
 если адреса нет или города нет — возвращает `"Неизвестно"`. Сделай это через
 safe call + elvis, без единого `!!`.
 
-### Решения (текущее состояние)
+### Решения (финальная версия после разбора)
 
-**Point / Calculate.distance** 🔶 нужна правка
+**Point / Calculate.distance**
 ```kotlin
 data class Point(
     val x: Int,
@@ -428,17 +428,15 @@ data class Point(
 
 @Service
 class Calculate {
-    fun distance(p1: Point, p2: Point): Double {
-        var x = 0.0
-        var y = 0.0
-        x = if (p1.x > p2.x) (p1.x - p2.x).toDouble() else (p2.x - p1.x).toDouble()
-        y = if (p1.y > p2.y) (p1.y - p2.y).toDouble() else (p2.y - p1.y).toDouble()
-        val sumSq = x * x + y * y
-        return sqrt(sumSq)
+    fun distance(
+        p1: Point,
+        p2: Point,
+    ): Double {
+        return hypot((p1.x - p2.x).toDouble(), (p1.y - p2.y).toDouble())
     }
 }
 ```
-`copy()`/`==` проверены не отдельным `main()`, а прямо в `LearningApplication`
+`copy()`/`==` проверены не отдельным `main()`, а в `Main003.kt`
 (`CommandLineRunner`, DI через `Calculate`):
 ```kotlin
 val pointX = Point(10, 10)
@@ -449,39 +447,64 @@ println(pointCopy)
 val distance = calculate.distance(pointX, pointY)
 println(distance)
 ```
-Это рабочий и вполне уместный вариант проверки — засчитано.
 
-**PaymentResult / describe** 🔶 не закончена
+**PaymentResult / describe**
 ```kotlin
 sealed class PaymentResult
 class Success(val transactionId: String) : PaymentResult()
 class Failure(val reason: String) : PaymentResult()
 object Pending : PaymentResult()
+
+@Service
+class Result {
+    fun describe(result: PaymentResult): String =
+        when (result) {
+            is Success -> "Success: ${result.transactionId}"
+            is Failure -> "Failure: ${result.reason}"
+            Pending -> "Данные: Pending"
+        }
+}
 ```
-`Result.kt` пока пустая заглушка:
+
+**Address / Person / getCityOrDefault**
 ```kotlin
-class Result() {}
+data class Address(
+    val city: String? = null,
+    val zipCode: String? = null,
+)
+
+data class Person(
+    val name: String,
+    val address: Address? = null,
+)
+
+@Service
+class PersonService {
+    fun getCityOrDefault(person: Person): String {
+        return person.address?.city ?: "Неизвестно"
+    }
+}
 ```
 
-**Address / Person / getCityOrDefault** ⬜ не начата.
+Все три задачи прогнаны через отдельный `Main003.kt`
+(`mvn spring-boot:run -Dspring-boot.run.main-class=...Main003Kt`), вывод верный.
 
-### Разбор (по факту сделанного)
+### Разбор
 
-- **Point/Calculate** — сам `distance` считает верно, но написан избыточно:
-  ручной if/else для получения модуля разницы не нужен — при возведении в
-  квадрат (`x * x`) знак всё равно исчезает, поэтому можно сразу
-  `val dx = (p1.x - p2.x).toDouble()` без ветвления. Ещё проще — использовать
-  готовую `kotlin.math.hypot(dx, dy)`, которая как раз считает
-  `sqrt(dx² + dy²)`. В файле остался закомментированный мёртвый код
-  (`if (x == 0.0) return y...`) — такое стоит удалять, а не оставлять
-  закомментированным: он и не нужен, формула и так корректно работает при
-  x=0 или y=0.
-- **PaymentResult** — `sealed class` сделан правильно (три варианта: класс с
-  данными, класс с данными, `object` без данных — ровно то, что просят под
-  `Success`/`Failure`/`Pending`). Осталось написать `describe()` в `Result.kt`
-  через `when` по трём веткам — компилятор проверит полноту сам.
-- **Null safety (задача 3)** — ещё не начата, будет хорошей проверкой на
-  `?.`/`?:` без единого `!!`.
+- **Point/Calculate** — исходная версия ручного if/else для модуля разницы
+  заменена на `kotlin.math.hypot(dx, dy)`, которая как раз считает
+  `sqrt(dx² + dy²)` — код сжался с 15 строк до одной. По пути поправлены два
+  сопутствующих момента: `var`, который не менялся повторно после
+  присвоения (должен был быть `val`), и одноимённые с полями `Point.x`/`Point.y`
+  локальные переменные `x`/`y`, путавшие смысл (по факту это были `dx`/`dy`) —
+  в финальной версии оба вопроса сняты за счёт удаления лишнего кода целиком.
+- **PaymentResult/Result** — `sealed class` сделан правильно с самого начала
+  (класс с данными / класс с данными / `object` без данных). `describe()`
+  дописана и возвращает `String` через `when` с проверкой полноты компилятором,
+  как и требовалось (без побочного `println` внутри самой функции).
+- **Address/Person/PersonService** — `getCityOrDefault` реализована ровно так,
+  как просила задача: `person.address?.city ?: "Неизвестно"` — safe call +
+  elvis, без единого `!!`.
 
 ---
 

@@ -12,8 +12,8 @@
 - ✅ Классы, объекты, конструкторы (primary/secondary), init-блок — `lesson001`
 - ✅ Инкапсуляция (private, методы-геттеры) — `lesson001`
 - ✅ Наследование (`open`/`override`), интерфейсы, abstract class — `lesson002`
-- 🔶 data class, sealed class, enum class — `lesson003` (q1, q2 в доработке, q3 не начат)
-- ⬜ Null safety (`?`, `?:`, `!!`) — `lesson003/q3`
+- ✅ data class, sealed class, enum class — `lesson003`
+- ✅ Null safety (`?`, `?:`, `!!`) — `lesson003/q3`
 
 ## Этап 2 — Коллекции и функциональщина (2 недели)
 
@@ -55,7 +55,6 @@
 
 ## Текущий фокус
 
-Урок 3 (`lesson003`): `q1` проверен через `LearningApplication`
-(`copy()`/`==` работают) — осталось убрать ручной abs/мёртвый код в
-`Calculate.distance`; дописать `q2/Result.kt` (`describe()` через `when`);
-сделать `q3` (null safety: `Address`/`Person`/`getCityOrDefault`).
+Этап 1 полностью закрыт (уроки 1-3). Дальше — Этап 2: коллекции
+(List/Set/Map, изменяемые/неизменяемые версии) и функциональщина (лямбды,
+`map`/`filter`/`reduce`, extension functions).
