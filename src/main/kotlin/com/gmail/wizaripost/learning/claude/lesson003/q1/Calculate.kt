@@ -24,12 +24,6 @@ class Calculate {
             } else {
                 (p2.y - p1.y).toDouble()
             }
-//        if (x == 0.0) {
-//            return y
-//        }
-//        if (y == 0.0) {
-//            return x
-//        }
         val sumSq = x * x + y * y
         return sqrt(sumSq)
     }
