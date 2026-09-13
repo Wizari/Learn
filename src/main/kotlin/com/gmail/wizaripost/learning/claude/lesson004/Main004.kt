@@ -16,11 +16,10 @@ class Main004(
 
         val arr1 = listOf(10, 1, 2, 3, 4)
         println(check.hasDuplicates(arr1))
-
-        println("*** 2 ***")
-
         val arr2 = listOf(10, 10, 1, 2, 3, 4)
         println(check.hasDuplicates(arr2))
+
+        println("*** 2 ***")
         val arr3 = listOf("10", "10", "aaa", "aaa", "www", "ddd")
         val result = check.wordFrequency(arr3)
         println(result)

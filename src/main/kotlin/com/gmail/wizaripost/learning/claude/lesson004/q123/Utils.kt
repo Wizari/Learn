@@ -5,19 +5,19 @@ import org.springframework.stereotype.Service
 @Service
 class Utils {
     fun hasDuplicates(list: List<Int>): Boolean {
-        var set = mutableSetOf<Int>()
+        val set = mutableSetOf<Int>()
         var result: Boolean
         for (element in list) {
             result = set.add(element)
             if (!result) {
-                return false
+                return true
             }
         }
-        return true
+        return false
     }
 
     fun wordFrequency(words: List<String>): Map<String, Int> {
-        var wordsMap: MutableMap<String, Int> = mutableMapOf()
+        val wordsMap: MutableMap<String, Int> = mutableMapOf()
         for (word in words) {
             wordsMap[word] = wordsMap.getOrDefault(word, 0) + 1
         }
