@@ -9,6 +9,7 @@
 - [Lesson 001 — Классы, объекты, инкапсуляция ✅](#lesson-001--классы-объекты-инкапсуляция-)
 - [Lesson 002 — Наследование, интерфейсы, abstract class ✅](#lesson-002--наследование-интерфейсы-abstract-class-)
 - [Lesson 003 — data class, sealed class, enum class, null safety ✅](#lesson-003--data-class-sealed-class-enum-class-null-safety-)
+- [Lesson 004 — List, Set, Map 🔶](#lesson-004--list-set-map-)
 
 ---
 
@@ -505,6 +506,102 @@ class PersonService {
 - **Address/Person/PersonService** — `getCityOrDefault` реализована ровно так,
   как просила задача: `person.address?.city ?: "Неизвестно"` — safe call +
   elvis, без единого `!!`.
+
+---
+
+## Lesson 004 — List, Set, Map 🔶
+
+### Теория
+
+**Главное отличие от Java.** В Kotlin коллекции по умолчанию разделены на
+read-only интерфейсы (`List`, `Set`, `Map`) и изменяемые (`MutableList`,
+`MutableSet`, `MutableMap`). Это отдельные интерфейсы, а не модификатор —
+компилятор не даст вызвать `add()`/`remove()` на обычном `List`.
+
+```kotlin
+val readOnly: List<Int> = listOf(1, 2, 3)
+val mutable: MutableList<Int> = mutableListOf(1, 2, 3)
+
+mutable.add(4)      // ок
+// readOnly.add(4)  // ошибка компиляции — метода add() у List просто нет
+```
+
+Важная тонкость (частый источник багов у тех, кто пришёл из Java): "read-only"
+не значит "неизменяемая на 100%". Это ограничение интерфейса, а не гарантия
+иммутабельности объекта. Под капотом `listOf()` обычно и есть обычный
+`ArrayList`, просто "спрятанный" за интерфейсом `List`. Если у кого-то есть
+ссылка на тот же объект как на `MutableList` (например, через небезопасный
+каст `as MutableList`), он может изменить твой "read-only" список у тебя
+из-под носа:
+```kotlin
+val readOnly: List<Int> = mutableListOf(1, 2, 3)
+(readOnly as MutableList<Int>).add(4)  // компилируется, но это плохая практика
+println(readOnly)  // [1, 2, 3, 4] — "неизменяемый" список изменился
+```
+Вывод: `List` — это контракт "я не буду это менять", а не железная гарантия.
+Такой каст — красный флаг, почти как `!!`.
+
+**List** — упорядоченная коллекция, допускает дубликаты, доступ по индексу:
+```kotlin
+val list = listOf("a", "b", "c")
+list[0]                 // "a"
+list.size                // 3
+list.contains("b")       // true
+list.indexOf("c")        // 2
+```
+
+**Set** — не допускает дубликатов, сравнение элементов через
+`equals`/`hashCode`. `setOf()` по умолчанию сохраняет порядок вставки (это
+`LinkedHashSet` под капотом):
+```kotlin
+val set = mutableSetOf(1, 2, 2, 3)
+println(set)              // [1, 2, 3] — дубликат "2" схлопнулся сам
+set.add(2)                 // ничего не изменится, 2 уже есть
+```
+
+**Map** — пары ключ-значение, ключи уникальны. Пара создаётся инфикс-функцией
+`to`:
+```kotlin
+val map = mapOf("a" to 1, "b" to 2)
+map["a"]              // 1
+map["z"]              // null — если ключа нет, а не исключение
+map.containsKey("b")  // true
+
+val mutableMap = mutableMapOf<String, Int>()
+mutableMap["x"] = 10                      // put
+mutableMap.getOrPut("x") { 0 }             // вернёт 10 (уже есть)
+mutableMap.getOrPut("y") { 0 }             // добавит "y" to 0 и вернёт 0
+```
+`getOrPut(key) { default }` — очень частый паттерн: "если ключа нет — создать
+значение по умолчанию и сразу его вернуть", избавляет от ручной проверки
+`if (map.containsKey(...))`.
+
+**Перебор:**
+```kotlin
+for (item in list) { ... }
+for ((key, value) in map) { println("$key -> $value") }
+```
+
+### Задания
+
+**Задача 1.** Напиши функцию `hasDuplicates(list: List<Int>): Boolean`,
+которая определяет, есть ли в списке повторяющиеся элементы. Используй `Set`,
+чтобы отслеживать уже увиденные значения (цикл `for`, без `filter`/`map` — они
+будут в следующей теме).
+
+**Задача 2.** Напиши функцию `wordFrequency(words: List<String>): Map<String, Int>`,
+которая считает, сколько раз встречается каждое слово в списке. Используй
+`MutableMap` и `getOrPut` (или `getOrDefault`) внутри цикла `for`.
+
+**Задача 3 (посложнее).** Напиши функцию
+`mergeCounts(a: Map<String, Int>, b: Map<String, Int>): Map<String, Int>`,
+которая объединяет две карты счётчиков: если ключ есть в обеих — значения
+складываются, если только в одной — берётся как есть. Верни результат как
+обычный (read-only) `Map`.
+
+### Решения
+
+_Пока не начаты._
 
 ---
 
