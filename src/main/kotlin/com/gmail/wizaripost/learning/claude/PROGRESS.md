@@ -9,7 +9,8 @@
 - [Lesson 001 — Классы, объекты, инкапсуляция ✅](#lesson-001--классы-объекты-инкапсуляция-)
 - [Lesson 002 — Наследование, интерфейсы, abstract class ✅](#lesson-002--наследование-интерфейсы-abstract-class-)
 - [Lesson 003 — data class, sealed class, enum class, null safety ✅](#lesson-003--data-class-sealed-class-enum-class-null-safety-)
-- [Lesson 004 — List, Set, Map 🔶](#lesson-004--list-set-map-)
+- [Lesson 004 — List, Set, Map ✅](#lesson-004--list-set-map-)
+- [Lesson 005 — Лямбды, map/filter/reduce, extension functions 🔶](#lesson-005--лямбды-mapfilterreduce-extension-functions-)
 
 ---
 
@@ -509,7 +510,7 @@ class PersonService {
 
 ---
 
-## Lesson 004 — List, Set, Map 🔶
+## Lesson 004 — List, Set, Map ✅
 
 ### Теория
 
@@ -598,6 +599,130 @@ for ((key, value) in map) { println("$key -> $value") }
 которая объединяет две карты счётчиков: если ключ есть в обеих — значения
 складываются, если только в одной — берётся как есть. Верни результат как
 обычный (read-only) `Map`.
+
+### Решения
+
+Всё в одном файле `lesson004/q123/Utils.kt` (`@Service`), проверено через `Main004.kt`.
+```kotlin
+fun hasDuplicates(list: List<Int>): Boolean {
+    val set = mutableSetOf<Int>()
+    var result: Boolean
+    for (element in list) {
+        result = set.add(element)
+        if (!result) return true
+    }
+    return false
+}
+
+fun wordFrequency(words: List<String>): Map<String, Int> {
+    val wordsMap: MutableMap<String, Int> = mutableMapOf()
+    for (word in words) {
+        wordsMap[word] = wordsMap.getOrDefault(word, 0) + 1
+    }
+    return wordsMap
+}
+
+fun mergeCounts(a: Map<String, Int>, b: Map<String, Int>): Map<String, Int> {
+    val result: MutableMap<String, Int> = mutableMapOf()
+    result.putAll(a)
+    for (elementB in b) {
+        result[elementB.key] = result.getOrDefault(elementB.key, 0) + elementB.value
+    }
+    return result.toMap()
+}
+```
+
+### Разбор
+
+- **hasDuplicates** — в первой версии логика была инвертирована: `set.add(x)`
+  возвращает `false`, если элемент уже был в сете (дубликат найден), но код
+  делал `return false` в этом случае вместо `return true`, и наоборот после
+  цикла. Поправлено — работает верно.
+- **wordFrequency / mergeCounts** — верно с первой версии.
+- Задачи собраны в один файл/пакет `q123` вместо раздельных `q1`/`q2`/`q3` —
+  не ошибка, просто отход от структуры прошлых уроков.
+
+---
+
+## Lesson 005 — Лямбды, map/filter/reduce, extension functions 🔶
+
+### Теория
+
+**Лямбда** — функция без имени, которую можно передать как значение:
+```kotlin
+val square = { n: Int -> n * n }
+println(square(5))  // 25
+```
+Тип лямбды записывается как `(ПараметрыЧерезЗапятую) -> ТипРезультата`:
+```kotlin
+val add: (Int, Int) -> Int = { a, b -> a + b }
+```
+Если у лямбды один параметр, его можно не называть — использовать неявное
+имя `it`:
+```kotlin
+val double: (Int) -> Int = { it * 2 }
+```
+Если лямбда — последний аргумент функции, её можно вынести за скобки
+(trailing lambda) — именно так выглядят вызовы `map`/`filter` и т.п.:
+```kotlin
+list.map { it * 2 }          // вместо list.map({ it * 2 })
+```
+
+**map / filter / reduce / fold** — базовые функции на коллекциях, заменяющие
+ручные циклы:
+```kotlin
+val numbers = listOf(1, 2, 3, 4, 5)
+
+numbers.map { it * it }              // [1, 4, 9, 16, 25] — преобразовать каждый элемент
+numbers.filter { it % 2 == 0 }       // [2, 4] — оставить только подходящие
+numbers.reduce { acc, x -> acc + x } // 15 — свернуть в одно значение, старт = первый элемент
+numbers.fold(100) { acc, x -> acc + x } // 115 — то же, но со своим стартовым значением
+```
+Разница `reduce` и `fold`: `reduce` берёт первый элемент коллекции как
+стартовый аккумулятор — упадёт с исключением на пустой коллекции. `fold`
+принимает явное стартовое значение — безопасен и на пустой коллекции.
+
+Другие частые функции: `sumOf { }`, `count { }`, `any { }`, `all { }`,
+`sortedBy { }`/`sortedByDescending { }`, `groupBy { }`, `maxByOrNull { }`/
+`minByOrNull { }`, `forEach { }`. Их можно объединять в цепочку:
+```kotlin
+val result = numbers.filter { it % 2 == 0 }.map { it * it }.sum()  // 20
+```
+`groupBy { keySelector }` — группирует элементы в `Map<Key, List<Элемент>>`
+по значению, которое возвращает лямбда для каждого элемента:
+```kotlin
+listOf("a", "bb", "cc", "ddd").groupBy { it.length }
+// {1=[a], 2=[bb, cc], 3=[ddd]}
+```
+
+**Extension function (функция-расширение)** — добавляет метод существующему
+типу (даже стандартному или из чужой библиотеки) без наследования и без
+изменения его исходного кода:
+```kotlin
+fun String.isPalindrome(): Boolean {
+    val cleaned = this.lowercase()
+    return cleaned == cleaned.reversed()
+}
+
+println("Racecar".isPalindrome())  // true
+```
+Внутри extension function `this` — это тот объект, на котором её вызвали
+(receiver). По факту под капотом это обычная функция, принимающая объект
+первым параметром — компилятор просто позволяет писать её в виде метода.
+
+### Задания
+
+**Задача 1.** Напиши extension-функцию `String.isPalindrome(): Boolean` —
+проверяет, что строка одинаково читается вперёд и назад (без учёта регистра).
+
+**Задача 2.** Напиши функцию `sumOfSquaresOfEven(numbers: List<Int>): Int`,
+которая считает сумму квадратов чётных чисел из списка. Без ручного цикла —
+через цепочку `filter` + `map` + `sum`.
+
+**Задача 3 (посложнее).** Напиши extension-функцию `List<Int>.mostFrequent(): Int?`,
+которая возвращает число, встречающееся в списке чаще всего (если список
+пуст — `null`). Используй `groupBy` и `maxByOrNull` — без единого ручного
+цикла.
 
 ### Решения
 
